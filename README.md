@@ -10,3 +10,12 @@ This folder is the production-ready static website for `northconsult.ca`.
 4. The included `CNAME` file preserves `northconsult.ca` as the custom domain. Confirm the same value under **Custom domain** if needed.
 
 The site uses only HTML, CSS, and JavaScript. No build step or server is required.
+
+## Google Search setup
+
+After publishing, confirm these URLs open successfully:
+
+- `https://northconsult.ca/robots.txt`
+- `https://northconsult.ca/sitemap.xml`
+
+In Google Search Console, submit `sitemap.xml` under **Sitemaps**, then use **URL inspection** to request indexing for the home page and the three secondary pages.
