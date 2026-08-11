@@ -2,9 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Cobrowse Support Demo</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Cobrowse Order Support Demo</title>
 
   <!-- Cobrowse.io Web SDK -->
   <script>
@@ -33,13 +37,24 @@
     })(window, "script", "CobrowseIO");
 
     /*
-     * 从以下位置获取 License Key：
-     * Cobrowse Dashboard → Settings
+     * 1. 替换为自己的 Cobrowse.io License Key
      */
     CobrowseIO.license = "U35bgJ29G6pNqw";
 
     /*
-     * 加载并启动 SDK
+     * 2. 配置需要遮挡的字段
+     *
+     * 所有包含 cobrowse-redacted class 的元素，
+     * 在坐席侧都会被遮挡。
+     *
+     * 必须在 CobrowseIO.start() 之前配置。
+     */
+    CobrowseIO.redactedViews = [
+      ".cobrowse-redacted"
+    ];
+
+    /*
+     * 3. 加载并启动 Cobrowse SDK
      */
     CobrowseIO.client()
       .then(function() {
@@ -54,11 +69,67 @@
   </script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
-      margin: 60px auto;
-      padding: 20px;
+      background: #f5f7fa;
+      margin: 0;
+      padding: 40px 20px;
+      color: #202124;
+    }
+
+    .container {
+      max-width: 620px;
+      margin: 0 auto;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .form-field {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    input {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #b8bec9;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    input:focus {
+      border-color: #2455d6;
+      outline: 2px solid rgba(36, 85, 214, 0.15);
+    }
+
+    /*
+     * 这个样式只用于提醒客户该字段受保护。
+     * 它不负责真正的 redaction。
+     */
+    .cobrowse-redacted {
+      background-color: #fff9e6;
+      border-color: #d99e00;
+    }
+
+    .privacy-message {
+      margin-top: 6px;
+      color: #6b7280;
+      font-size: 13px;
     }
 
     button {
@@ -71,58 +142,171 @@
       font-size: 16px;
     }
 
+    button:hover {
+      background: #1943b3;
+    }
+
     button:disabled {
       background: #999;
       cursor: wait;
     }
 
     #support-code {
+      display: none;
       margin-top: 24px;
       padding: 20px;
-      background: #f3f5f8;
+      background: #eef3ff;
+      border: 2px solid #2455d6;
       border-radius: 6px;
-      font-size: 30px;
+      font-size: 32px;
       font-weight: bold;
-      letter-spacing: 6px;
+      letter-spacing: 8px;
       text-align: center;
-      display: none;
     }
 
     #status {
       margin-top: 15px;
       color: #555;
     }
+
+    .support-section {
+      margin-top: 30px;
+      padding-top: 25px;
+      border-top: 1px solid #ddd;
+    }
   </style>
 </head>
 
 <body>
 
-  <h1>Customer Support</h1>
+  <main class="container">
 
-  <p>
-    If you are speaking with a support agent, click the button below
-    to generate a six-digit support code.
-  </p>
+    <h1>Order Support Demo</h1>
 
-  <button id="generate-code" type="button">
-    Generate Support Code
-  </button>
+    <p>
+      Complete the information below. Sensitive fields are protected
+      and will not be visible to the support agent.
+    </p>
 
-  <div id="support-code"></div>
-  <div id="status"></div>
+    <!-- 坐席可以看到 -->
+    <div class="form-field">
+      <label for="order-number">Order Number</label>
+
+      <input
+        id="order-number"
+        name="order-number"
+        type="text"
+        value="12345"
+      >
+    </div>
+
+    <!-- 坐席可以看到 -->
+    <div class="form-field">
+      <label for="email">Email</label>
+
+      <input
+        id="email"
+        name="email"
+        type="email"
+        value="customer@example.com"
+      >
+    </div>
+
+    <!-- 坐席看不到 -->
+    <div class="form-field">
+      <label for="card-number">Credit Card Number</label>
+
+      <input
+        id="card-number"
+        name="card-number"
+        type="text"
+        class="cobrowse-redacted"
+        value="4111 1111 1111 1111"
+        autocomplete="off"
+      >
+
+      <div class="privacy-message">
+        This field is hidden from the support agent.
+      </div>
+    </div>
+
+    <!-- 坐席看不到 -->
+    <div class="form-field">
+      <label for="cvv">CVV</label>
+
+      <input
+        id="cvv"
+        name="cvv"
+        type="password"
+        class="cobrowse-redacted"
+        value="123"
+        autocomplete="off"
+      >
+
+      <div class="privacy-message">
+        This field is hidden from the support agent.
+      </div>
+    </div>
+
+    <!-- 坐席看不到 -->
+    <div class="form-field">
+      <label for="password">Account Password</label>
+
+      <input
+        id="password"
+        name="password"
+        type="password"
+        class="cobrowse-redacted"
+        value="DemoPassword123"
+        autocomplete="off"
+      >
+
+      <div class="privacy-message">
+        This field is hidden from the support agent.
+      </div>
+    </div>
+
+    <section class="support-section">
+
+      <h2>Start a support session</h2>
+
+      <p>
+        If you are speaking with a support agent, generate a six-digit
+        support code and read it to the agent.
+      </p>
+
+      <button id="generate-code" type="button">
+        Generate Support Code
+      </button>
+
+      <div id="support-code"></div>
+
+      <div id="status"></div>
+
+    </section>
+
+  </main>
 
   <script>
-    const generateButton = document.getElementById("generate-code");
-    const codeContainer = document.getElementById("support-code");
-    const statusContainer = document.getElementById("status");
+    const generateButton =
+      document.getElementById("generate-code");
+
+    const codeContainer =
+      document.getElementById("support-code");
+
+    const statusContainer =
+      document.getElementById("status");
 
     generateButton.addEventListener("click", function() {
       generateButton.disabled = true;
-      statusContainer.textContent = "Generating support code...";
+
+      statusContainer.textContent =
+        "Generating support code...";
+
       codeContainer.style.display = "none";
 
       /*
-       * 确保 SDK 已经加载，然后生成6位支持码
+       * 生成6位 Cobrowse 支持码
        */
       CobrowseIO.client()
         .then(function() {
@@ -138,7 +322,10 @@
           generateButton.disabled = false;
         })
         .catch(function(error) {
-          console.error("Unable to generate support code", error);
+          console.error(
+            "Unable to generate support code",
+            error
+          );
 
           statusContainer.textContent =
             "Unable to generate a support code. Please try again.";
