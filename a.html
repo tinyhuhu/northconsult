@@ -1,1 +1,152 @@
-abc
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Cobrowse Support Demo</title>
+
+  <!-- Cobrowse.io Web SDK -->
+  <script>
+    (function(w, t, c, p, s, e) {
+      p = new Promise(function(resolve) {
+        w[c] = {
+          client: function() {
+            if (!s) {
+              s = document.createElement(t);
+              s.src = "https://js.cobrowse.io/CobrowseIO.js";
+              s.async = true;
+              s.crossOrigin = "anonymous";
+
+              e = document.getElementsByTagName(t)[0];
+              e.parentNode.insertBefore(s, e);
+
+              s.onload = function() {
+                resolve(w[c]);
+              };
+            }
+
+            return p;
+          }
+        };
+      });
+    })(window, "script", "CobrowseIO");
+
+    /*
+     * 从以下位置获取 License Key：
+     * Cobrowse Dashboard → Settings
+     */
+    CobrowseIO.license = "YOUR_COBROWSE_LICENSE_KEY";
+
+    /*
+     * 加载并启动 SDK
+     */
+    CobrowseIO.client()
+      .then(function() {
+        return CobrowseIO.start();
+      })
+      .then(function() {
+        console.log("Cobrowse.io SDK started successfully");
+      })
+      .catch(function(error) {
+        console.error("Failed to start Cobrowse.io SDK", error);
+      });
+  </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 60px auto;
+      padding: 20px;
+    }
+
+    button {
+      padding: 12px 20px;
+      background: #2455d6;
+      color: white;
+      border: 0;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: wait;
+    }
+
+    #support-code {
+      margin-top: 24px;
+      padding: 20px;
+      background: #f3f5f8;
+      border-radius: 6px;
+      font-size: 30px;
+      font-weight: bold;
+      letter-spacing: 6px;
+      text-align: center;
+      display: none;
+    }
+
+    #status {
+      margin-top: 15px;
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Customer Support</h1>
+
+  <p>
+    If you are speaking with a support agent, click the button below
+    to generate a six-digit support code.
+  </p>
+
+  <button id="generate-code" type="button">
+    Generate Support Code
+  </button>
+
+  <div id="support-code"></div>
+  <div id="status"></div>
+
+  <script>
+    const generateButton = document.getElementById("generate-code");
+    const codeContainer = document.getElementById("support-code");
+    const statusContainer = document.getElementById("status");
+
+    generateButton.addEventListener("click", function() {
+      generateButton.disabled = true;
+      statusContainer.textContent = "Generating support code...";
+      codeContainer.style.display = "none";
+
+      /*
+       * 确保 SDK 已经加载，然后生成6位支持码
+       */
+      CobrowseIO.client()
+        .then(function() {
+          return CobrowseIO.createSessionCode();
+        })
+        .then(function(code) {
+          codeContainer.textContent = code;
+          codeContainer.style.display = "block";
+
+          statusContainer.textContent =
+            "Please read this code to your support agent.";
+
+          generateButton.disabled = false;
+        })
+        .catch(function(error) {
+          console.error("Unable to generate support code", error);
+
+          statusContainer.textContent =
+            "Unable to generate a support code. Please try again.";
+
+          generateButton.disabled = false;
+        });
+    });
+  </script>
+
+</body>
+</html>
